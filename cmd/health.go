@@ -32,7 +32,7 @@ var healthCmd = &cobra.Command{
 		}
 
 		s = utils.StartSpinner(" Checking required Homebrew packages")
-		result = pkg.CheckHomebrewPackages([]string{"openjdk", "ruby-build", "gradle"})
+		result = pkg.CheckHomebrewPackages([]string{"openjdk", "gradle"})
 		if result {
 			utils.StopSpinner(s, " Required Homebrew packages are installed.", "success")
 		} else {

@@ -25,7 +25,7 @@ var setupCmd = &cobra.Command{
 		fmt.Println("Setting up development environment...")
 
 		pkg.SetupHomebrew()
-		pkg.SetupHomebrewPackages([]string{"openjdk@" + constants.REQUIRED_JDK_VERSION, "ruby-build", "gradle"})
+		pkg.SetupHomebrewPackages([]string{"openjdk@" + constants.REQUIRED_JDK_VERSION, "gradle"})
 		pkg.SetupNVM(homeDir)
 		pkg.SetupRbenv(homeDir)
 		pkg.SetupCocoapods()
