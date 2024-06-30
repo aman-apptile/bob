@@ -21,7 +21,7 @@ jobs:
         run: go mod download
 
       - name: Build
-        run: go build -v ./...
+        run: go build -v -o ./bob ./...
 
       - name: Test
-        run: ./bob
+        run: bob
