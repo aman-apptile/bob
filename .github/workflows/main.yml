@@ -10,18 +10,40 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
           go-version: 1.22
 
       - name: Install dependencies
         run: go mod download
 
-      - name: Build
+      - name: Build Binary
         run: go build -v
 
-      - name: Test
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bob
+          path: ./bob
+
+  test-setup-and-health:
+    runs-on: macos-latest
+    needs: build
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: bob
+
+      - name: Grant Execution Permissions
+        run: chmod +x ./bob
+
+      - name: Setup
         run: ./bob setup
+
+      - name: Health
+        run: ./bob health
