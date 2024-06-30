@@ -84,9 +84,6 @@ func SetupRbenv(homeDir string) {
 		fmt.Println("Installing rbenv...")
 		utils.InstallPackage("rbenv")
 
-		fmt.Println("Installing ruby-build plugin for rbenv...")
-		utils.InstallPackage("ruby-build")
-
 		lines := []string{
 			"export PATH=\"$HOME/.rbenv/bin:$PATH\"",
 			"eval \"$(rbenv init -)\"",
