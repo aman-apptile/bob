@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/aman-apptile/bob/pkg/constants"
 	"github.com/aman-apptile/bob/pkg/utils"
 )
 
@@ -46,8 +47,6 @@ func SetupHomebrewPackages(packages []string) {
 // SetupNVM installs and configures Node Version Manager (NVM) if it is not already installed.
 func SetupNVM(homeDir string) {
 	if !utils.IsCommandAvailable("nvm") {
-		REQUIRED_NODE_VERSION := os.Getenv("REQUIRED_NODE_VERSION")
-
 		nvmInstallScript := "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh"
 
 		fmt.Println("Installing NVM...")
@@ -66,14 +65,14 @@ export NVM_DIR="$HOME/.nvm"
 		utils.CheckError(err, "Failed to source .zshrc")
 
 		fmt.Println("Installing Node.js using NVM...")
-		err = utils.RunCommand("nvm", "install", REQUIRED_NODE_VERSION)
+		err = utils.RunCommand("nvm", "install", constants.REQUIRED_NODE_VERSION)
 		utils.CheckError(err, "Failed to install Node.js using NVM")
 
-		err = utils.RunCommand("nvm", "alias", "default", REQUIRED_NODE_VERSION)
+		err = utils.RunCommand("nvm", "alias", "default", constants.REQUIRED_NODE_VERSION)
 		utils.CheckError(err, "Failed to set default Node.js version")
 
-		err = utils.RunCommand("nvm", "use", REQUIRED_NODE_VERSION)
-		utils.CheckError(err, fmt.Sprintf("Failed to use Node.js version: %s", REQUIRED_NODE_VERSION))
+		err = utils.RunCommand("nvm", "use", constants.REQUIRED_NODE_VERSION)
+		utils.CheckError(err, fmt.Sprintf("Failed to use Node.js version: %s", constants.REQUIRED_NODE_VERSION))
 	} else {
 		fmt.Println("NVM is already installed.")
 	}
@@ -82,8 +81,6 @@ export NVM_DIR="$HOME/.nvm"
 // SetupRbenv installs and configures rbenv if it is not already installed.
 func SetupRbenv(homeDir string) {
 	if !utils.IsCommandAvailable("rbenv") {
-		REQUIRED_RUBY_VERSION := os.Getenv("REQUIRED_RUBY_VERSION")
-
 		fmt.Println("Installing rbenv...")
 		utils.InstallPackage("rbenv")
 
@@ -112,9 +109,9 @@ func SetupRbenv(homeDir string) {
 		utils.RunCommand("source", filepath.Join(homeDir, ".zshrc"))
 
 		fmt.Println("Installing Ruby using rbenv...")
-		utils.RunCommand("rbenv", "install", REQUIRED_RUBY_VERSION)
+		utils.RunCommand("rbenv", "install", constants.REQUIRED_RUBY_VERSION)
 
-		utils.RunCommand("rbenv", "global", REQUIRED_RUBY_VERSION)
+		utils.RunCommand("rbenv", "global", constants.REQUIRED_RUBY_VERSION)
 	} else {
 		fmt.Println("rbenv is already installed.")
 	}

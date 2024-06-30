@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/aman-apptile/bob/pkg"
+	"github.com/aman-apptile/bob/pkg/constants"
 	"github.com/aman-apptile/bob/pkg/utils"
 	"github.com/spf13/cobra"
 )
@@ -24,7 +25,7 @@ var setupCmd = &cobra.Command{
 		fmt.Println("Setting up development environment...")
 
 		pkg.SetupHomebrew()
-		pkg.SetupHomebrewPackages([]string{"openjdk@" + os.Getenv("REQUIRED_JDK_VERSION"), "ruby-build", "gradle"})
+		pkg.SetupHomebrewPackages([]string{"openjdk@" + constants.REQUIRED_JDK_VERSION, "ruby-build", "gradle"})
 		pkg.SetupNVM(homeDir)
 		pkg.SetupRbenv(homeDir)
 		pkg.SetupCocoapods()
