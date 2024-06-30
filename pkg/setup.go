@@ -9,15 +9,15 @@ import (
 	"github.com/aman-apptile/bob/pkg/utils"
 )
 
-// setupHomebrewPackages installs the necessary Homebrew packages.
-func setupHomebrewPackages(packages []string) {
+// SetupHomebrewPackages installs the necessary Homebrew packages.
+func SetupHomebrewPackages(packages []string) {
 	for _, pkg := range packages {
 		utils.InstallPackage(pkg)
 	}
 }
 
-// setupNVM installs and configures Node Version Manager (NVM).
-func setupNVM(homeDir string) {
+// SetupNVM installs and configures Node Version Manager (NVM).
+func SetupNVM(homeDir string) {
 	nvmInstallScript := "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh"
 
 	fmt.Println("Installing NVM...")
@@ -36,12 +36,18 @@ export NVM_DIR="$HOME/.nvm"
 	utils.CheckError(err, "Failed to source .zshrc")
 
 	fmt.Println("Installing Node.js using NVM...")
-	err = utils.RunCommand("nvm", "install", "node")
+	err = utils.RunCommand("nvm", "install", "16.5")
 	utils.CheckError(err, "Failed to install Node.js using NVM")
+
+	err = utils.RunCommand("nvm", "alias", "default", "16.5")
+	utils.CheckError(err, "Failed to set default Node.js version")
+
+	err = utils.RunCommand("nvm", "use", "16.5")
+	utils.CheckError(err, "Failed to use Node.js version 16.5")
 }
 
-// setupRbenv installs and configures rbenv.
-func setupRbenv(homeDir string) {
+// SetupRbenv installs and configures rbenv.
+func SetupRbenv(homeDir string) {
 	fmt.Println("Installing rbenv...")
 	utils.InstallPackage("rbenv")
 
@@ -58,13 +64,13 @@ eval "$(rbenv init -)"
 	utils.RunCommand("source", zshrc)
 
 	fmt.Println("Installing Ruby using rbenv...")
-	utils.RunCommand("rbenv", "install", "2.7.2")
+	utils.RunCommand("rbenv", "install", "2.7.8")
 
-	utils.RunCommand("rbenv", "global", "2.7.2")
+	utils.RunCommand("rbenv", "global", "2.7.8")
 }
 
-// setupAndroidSDK sets up the Android SDK.
-func setupAndroidSDK(homeDir string) {
+// SetupAndroidSDK sets up the Android SDK.
+func SetupAndroidSDK(homeDir string) {
 	sdkDir := filepath.Join(homeDir, "Library", "Android", "sdk", "cmdline-tools", "latest")
 	err := os.MkdirAll(sdkDir, os.ModePerm)
 	utils.CheckError(err, "Failed to create Android SDK directory")
@@ -89,8 +95,8 @@ func setupAndroidSDK(homeDir string) {
 	}
 }
 
-// setupGradle installs and sets up Gradle.
-func setupGradle(homeDir string) {
+// SetupGradle installs and sets up Gradle.
+func SetupGradle(homeDir string) {
 	err := utils.DownloadAndExtract("https://services.gradle.org/distributions/gradle-7.2-bin.zip", "/usr/local")
 	utils.CheckError(err, "Failed to download and extract Gradle")
 
@@ -98,8 +104,8 @@ func setupGradle(homeDir string) {
 	utils.AppendToFile(zshrc, "export PATH=$PATH:/usr/local/gradle-7.2/bin\n")
 }
 
-// setupXcode installs Xcode command line tools and accepts the license.
-func setupXcode() {
+// SetupXcode installs Xcode command line tools and accepts the license.
+func SetupXcode() {
 	err := utils.RunCommand("xcode-select", "--install")
 	if err != nil {
 		log.Println("Xcode command line tools already installed")
@@ -111,23 +117,17 @@ func setupXcode() {
 	utils.CheckError(err, "Failed to accept Xcode license")
 }
 
-// setupCocoapods installs CocoaPods using Ruby gem.
-func setupCocoapods() {
+// SetupCocoapods installs CocoaPods using Ruby gem.
+func SetupCocoapods() {
 	err := utils.RunCommand("sudo", "gem", "install", "cocoapods")
 	utils.CheckError(err, "Failed to install CocoaPods")
 }
 
-func Init() {
-	homeDir, err := os.UserHomeDir()
-	utils.CheckError(err, "Failed to get home directory")
-
-	fmt.Println("Setting up development environment...")
-	setupHomebrewPackages([]string{"openjdk@11", "ruby-build"})
-	setupNVM(homeDir)
-	setupRbenv(homeDir)
-	setupAndroidSDK(homeDir)
-	setupGradle(homeDir)
-	setupXcode()
-	setupCocoapods()
-	fmt.Println("Development environment setup complete!")
+// SetupHomebrew installs Homebrew if not already installed.
+func SetupHomebrew() {
+	_, err := os.Stat("/opt/homebrew")
+	if os.IsNotExist(err) {
+		err := utils.RunCommand("/bin/bash", "-c", "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
+		utils.CheckError(err, "Failed to install Homebrew")
+	}
 }

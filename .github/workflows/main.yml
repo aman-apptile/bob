@@ -24,4 +24,4 @@ jobs:
         run: go build -v
 
       - name: Test
-        run: ./bob
+        run: ./bob setup

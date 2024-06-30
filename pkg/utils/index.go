@@ -119,3 +119,11 @@ func DownloadAndExtract(url, destDir string) error {
 
 	return nil
 }
+
+func GetDefaultShell() string {
+	shell := os.Getenv("SHELL")
+	if shell == "" {
+		shell = "/bin/bash"
+	}
+	return shell
+}
