@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 // CheckError now returns an error instead of exiting.
@@ -44,6 +45,13 @@ func RunCommand(command string, args ...string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+// RunCommandWithOutput executes a shell command and returns its output.
+func RunCommandWithOutput(command string, args ...string) (string, error) {
+	cmd := exec.Command(command, args...)
+	output, err := cmd.CombinedOutput()
+	return string(output), err
 }
 
 // InstallPackage simplified error handling.
@@ -120,10 +128,37 @@ func DownloadAndExtract(url, destDir string) error {
 	return nil
 }
 
+// GetDefaultShell returns the default shell path.
 func GetDefaultShell() string {
 	shell := os.Getenv("SHELL")
 	if shell == "" {
 		shell = "/bin/bash"
 	}
 	return shell
+}
+
+// IsCommandAvailable checks if a command is available in the system.
+func IsCommandAvailable(command string) bool {
+	_, err := exec.LookPath(command)
+	return err == nil
+}
+
+// IsPackageInstalled checks if a package is installed using brew.
+func IsPackageInstalled(pkg string) bool {
+	output, err := RunCommandWithOutput("brew", "list", "--formula", pkg)
+	if err != nil {
+		return false
+	}
+
+	return strings.Contains(output, pkg)
+}
+
+// IsGemInstalled checks if a gem is installed.
+func IsGemInstalled(gem string) bool {
+	output, err := RunCommandWithOutput("gem", "list", gem)
+	if err != nil {
+		return false
+	}
+
+	return strings.Contains(output, gem)
 }
