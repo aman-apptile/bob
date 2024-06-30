@@ -25,7 +25,7 @@ var setupCmd = &cobra.Command{
 		fmt.Println("Setting up development environment...")
 
 		pkg.SetupHomebrew()
-		pkg.SetupHomebrewPackages([]string{"openjdk@11", "ruby-build"})
+		pkg.SetupHomebrewPackages([]string{"openjdk@" + os.Getenv("REQUIRED_JDK_VERSION"), "ruby-build"})
 		pkg.SetupNVM(homeDir)
 		pkg.SetupRbenv(homeDir)
 		pkg.SetupAndroidSDK(homeDir)

@@ -162,3 +162,14 @@ func IsGemInstalled(gem string) bool {
 
 	return strings.Contains(output, gem)
 }
+
+// AppendLinesToZshrc appends lines to the .zshrc file.
+func AppendLinesToZshrc(lines ...string) {
+	homeDir, err := os.UserHomeDir()
+	CheckError(err, "Failed to get home directory")
+
+	zshrc := filepath.Join(homeDir, ".zshrc")
+	for _, line := range lines {
+		AppendToFile(zshrc, line+"\n")
+	}
+}
