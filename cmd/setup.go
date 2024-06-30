@@ -12,15 +12,10 @@ import (
 // setupCmd represents the setup command
 var setupCmd = &cobra.Command{
 	Use:   "setup",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "This command will setup the environment required to make Android and iOS builds for Apptile's react-native applications",
+	// Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("setup called")
+		fmt.Println("Setting up the environment for Android and iOS builds...\nInstalling required dependencies...\n\n- JDK\n- Xcode\n- Watchman\n- CocoaPods\n- Gradle\n- Android SDK\n- Android NDK\n- Android Emulator\n- Android Platform Tools\n- Android Build Tools\n- RBENV & Ruby\n- NVM & Node\n- Brew")
 	},
 }
 
