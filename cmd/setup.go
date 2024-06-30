@@ -18,20 +18,18 @@ var setupCmd = &cobra.Command{
 	Short: "This command will setup the environment required to make Android and iOS builds for Apptile's react-native applications",
 	// Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		// fmt.Println("Setting up the environment for Android and iOS builds...\nInstalling required dependencies...\n\n- JDK\n- Xcode\n- Watchman\n- CocoaPods\n- Gradle\n- Android SDK\n- Android NDK\n- Android Emulator\n- Android Platform Tools\n- Android Build Tools\n- RBENV & Ruby\n- NVM & Node\n- Brew")
 		homeDir, err := os.UserHomeDir()
 		utils.CheckError(err, "Failed to get home directory")
 
 		fmt.Println("Setting up development environment...")
 
 		pkg.SetupHomebrew()
-		pkg.SetupHomebrewPackages([]string{"openjdk@" + os.Getenv("REQUIRED_JDK_VERSION"), "ruby-build"})
+		pkg.SetupHomebrewPackages([]string{"openjdk@" + os.Getenv("REQUIRED_JDK_VERSION"), "ruby-build", "gradle"})
 		pkg.SetupNVM(homeDir)
 		pkg.SetupRbenv(homeDir)
-		pkg.SetupAndroidSDK(homeDir)
-		pkg.SetupGradle(homeDir)
-		pkg.SetupXcode()
 		pkg.SetupCocoapods()
+		pkg.SetupAndroidEnvironment(homeDir)
+		pkg.SetupIosEnvironment()
 
 		fmt.Println("Development environment setup complete!")
 	},

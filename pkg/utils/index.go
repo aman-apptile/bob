@@ -9,6 +9,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/gernest/wow"
+	"github.com/gernest/wow/spin"
 )
 
 // CheckError now returns an error instead of exiting.
@@ -172,4 +175,30 @@ func AppendLinesToZshrc(lines ...string) {
 	for _, line := range lines {
 		AppendToFile(zshrc, line+"\n")
 	}
+}
+
+// StartSpinner starts a spinner with the given message.
+func StartSpinner(message string) *wow.Wow {
+	spinner := wow.New(os.Stdout, spin.Get(spin.Dots), message)
+	spinner.Start()
+	return spinner
+}
+
+// StopSpinner stops the given spinner.
+func StopSpinner(spinner *wow.Wow, message string, result string) {
+	switch result {
+	case "success":
+		spinner.PersistWith(spin.Spinner{Frames: []string{"✅"}}, message)
+		break
+	case "failure":
+		spinner.PersistWith(spin.Spinner{Frames: []string{"❌"}}, message)
+		break
+	case "warning":
+		spinner.PersistWith(spin.Spinner{Frames: []string{"⚠️"}}, message)
+		break
+	default:
+		spinner.PersistWith(spin.Spinner{Frames: []string{"❓"}}, message)
+		break
+	}
+	spinner.Stop()
 }

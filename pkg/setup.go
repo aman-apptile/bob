@@ -9,6 +9,29 @@ import (
 	"github.com/aman-apptile/bob/pkg/utils"
 )
 
+// SetupCocoapods installs CocoaPods using Ruby gem if it is not already installed.
+func SetupCocoapods() {
+	if !utils.IsGemInstalled("cocoapods") {
+		err := utils.RunCommand("sudo", "gem", "install", "cocoapods")
+		utils.CheckError(err, "Failed to install CocoaPods")
+	} else {
+		fmt.Println("CocoaPods is already installed.")
+	}
+}
+
+// SetupHomebrew installs Homebrew if not already installed.
+func SetupHomebrew() {
+	if !utils.IsCommandAvailable("brew") {
+		_, err := os.Stat("/opt/homebrew")
+		if os.IsNotExist(err) {
+			err := utils.RunCommand("/bin/bash", "-c", "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
+			utils.CheckError(err, "Failed to install Homebrew")
+		}
+	} else {
+		fmt.Println("Homebrew is already installed.")
+	}
+}
+
 // SetupHomebrewPackages installs the necessary Homebrew packages if they are not already installed.
 func SetupHomebrewPackages(packages []string) {
 	for _, pkg := range packages {
@@ -70,6 +93,19 @@ func SetupRbenv(homeDir string) {
 		lines := []string{
 			"export PATH=\"$HOME/.rbenv/bin:$PATH\"",
 			"eval \"$(rbenv init -)\"",
+			"export PATH=\"${HOME}/.rbenv/shims:${PATH}\"",
+			"export RBENV_SHELL=zsh",
+			"source '/opt/homebrew/Cellar/rbenv/1.2.0/libexec/../completions/rbenv.zsh'",
+			"command rbenv rehash 2>/dev/null",
+			"rbenv() {",
+			"local command command=\"${1:-}\"",
+			"if [ \"$#\" -gt 0 ]; then",
+			"shift",
+			"fi",
+			"case \"$command\" in rehash|shell)",
+			"eval \"$(rbenv \"sh-$command\" \"$@\")\";; *)",
+			"command rbenv \"$command\" \"$@\";;",
+			"esac }",
 		}
 		utils.AppendLinesToZshrc(lines...)
 
@@ -84,8 +120,8 @@ func SetupRbenv(homeDir string) {
 	}
 }
 
-// SetupAndroidSDK sets up the Android SDK if it is not already set up.
-func SetupAndroidSDK(homeDir string) {
+// SetupAndroidEnvironment sets up the Android SDK, NDK, Platform Tools, Emulator & Build Tools if it they are not already set up.
+func SetupAndroidEnvironment(homeDir string) {
 	sdkRoot := filepath.Join(homeDir, "Library", "Android", "sdk")
 	if _, err := os.Stat(sdkRoot); os.IsNotExist(err) {
 		sdkDir := filepath.Join(sdkRoot, "cmdline-tools", "latest")
@@ -118,23 +154,20 @@ func SetupAndroidSDK(homeDir string) {
 	} else {
 		fmt.Println("Android SDK is already set up.")
 	}
+
+	// if !utils.IsCommandAvailable("gradle") {
+	// 	err := utils.DownloadAndExtract("https://services.gradle.org/distributions/gradle-7.2-bin.zip", "/usr/local")
+	// 	utils.CheckError(err, "Failed to download and extract Gradle")
+
+	// 	zshrc := filepath.Join(homeDir, ".zshrc")
+	// 	utils.AppendToFile(zshrc, "export PATH=$PATH:/usr/local/gradle-7.2/bin\n")
+	// } else {
+	// 	fmt.Println("Gradle is already installed.")
+	// }
 }
 
-// SetupGradle installs and sets up Gradle if it is not already installed.
-func SetupGradle(homeDir string) {
-	if !utils.IsCommandAvailable("gradle") {
-		err := utils.DownloadAndExtract("https://services.gradle.org/distributions/gradle-7.2-bin.zip", "/usr/local")
-		utils.CheckError(err, "Failed to download and extract Gradle")
-
-		zshrc := filepath.Join(homeDir, ".zshrc")
-		utils.AppendToFile(zshrc, "export PATH=$PATH:/usr/local/gradle-7.2/bin\n")
-	} else {
-		fmt.Println("Gradle is already installed.")
-	}
-}
-
-// SetupXcode installs or updates Xcode command line tools and accepts the license.
-func SetupXcode() {
+// SetupIosEnvironment installs or updates Xcode command line tools and accepts the license.
+func SetupIosEnvironment() {
 	if !utils.IsCommandAvailable("xcode-select") {
 		err := utils.RunCommand("xcode-select", "--install")
 		if err != nil {
@@ -152,27 +185,4 @@ func SetupXcode() {
 	// Accept the Xcode license
 	err := utils.RunCommand("sudo", "xcodebuild", "-license", "accept")
 	utils.CheckError(err, "Failed to accept Xcode license")
-}
-
-// SetupCocoapods installs CocoaPods using Ruby gem if it is not already installed.
-func SetupCocoapods() {
-	if !utils.IsGemInstalled("cocoapods") {
-		err := utils.RunCommand("sudo", "gem", "install", "cocoapods")
-		utils.CheckError(err, "Failed to install CocoaPods")
-	} else {
-		fmt.Println("CocoaPods is already installed.")
-	}
-}
-
-// SetupHomebrew installs Homebrew if not already installed.
-func SetupHomebrew() {
-	if !utils.IsCommandAvailable("brew") {
-		_, err := os.Stat("/opt/homebrew")
-		if os.IsNotExist(err) {
-			err := utils.RunCommand("/bin/bash", "-c", "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
-			utils.CheckError(err, "Failed to install Homebrew")
-		}
-	} else {
-		fmt.Println("Homebrew is already installed.")
-	}
 }
